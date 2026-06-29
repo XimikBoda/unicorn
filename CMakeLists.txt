@@ -48,6 +48,10 @@ if(MSVC)
     include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/msvc/unicorn
     )
+elseif(ANDROID_ABI)
+    include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/android
+    )
 else()
     include_directories(
         ${CMAKE_BINARY_DIR}
