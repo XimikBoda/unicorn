@@ -52,6 +52,10 @@ elseif(ANDROID_ABI)
     include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/android
     )
+elseif(EMSCRIPTEN)
+    include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/emscripten
+    )
 else()
     include_directories(
         ${CMAKE_BINARY_DIR}
@@ -91,6 +95,19 @@ if(MSVC)
         string(REPLACE "/MD" "/MT" CMAKE_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
         string(REPLACE "/MD" "/MT" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
     endif()
+
+elseif(EMSCRIPTEN)
+    set(UNICORN_TARGET_ARCH "tci")
+
+    add_compile_options(
+        -I${CMAKE_CURRENT_SOURCE_DIR}/qemu/tcg/${UNICORN_TARGET_ARCH}
+        -D_GNU_SOURCE
+        -D_FILE_OFFSET_BITS=64
+        -D_LARGEFILE_SOURCE
+        -Wall
+        -fPIC -fvisibility=hidden
+        -sSUPPORT_LONGJMP=emscripten
+    )
 else()
     if(ANDROID_ABI)
         string(FIND "${ANDROID_ABI}" "arm64" UC_RET)
@@ -224,6 +241,7 @@ add_library(arm-softmmu STATIC
     qemu/target-arm/unicorn_arm.c
     qemu/tcg/optimize.c
     qemu/tcg/tcg.c
+    $<$<STREQUAL:${UNICORN_TARGET_ARCH},tci>:qemu/tci.c>
     qemu/translate-all.c
 )
 

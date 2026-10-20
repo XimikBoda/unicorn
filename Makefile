@@ -290,7 +290,7 @@ all: unicorn
 
 qemu/config-host.mak: qemu/configure
 	cd qemu && \
-	./configure --cc="${CC}" --extra-cflags="$(UNICORN_CFLAGS)" --target-list="$(UNICORN_TARGETS)" ${UNICORN_QEMU_FLAGS}
+	./configure --cc="${CC}" --extra-cflags="$(UNICORN_CFLAGS)" --target-list="$(UNICORN_TARGETS)" ${UNICORN_QEMU_FLAGS} --disable-stack-protector --cpu=i386
 	@printf "$(UNICORN_ARCHS)" > config.log
 
 uc.o: qemu/config-host.mak FORCE
@@ -388,7 +388,7 @@ header:
 	$(eval TARGETS := m68k arm armeb aarch64 aarch64eb mips mipsel mips64 mips64el\
 		sparc sparc64 x86_64)
 	$(foreach var,$(TARGETS),\
-		$(shell python qemu/header_gen.py $(var) > qemu/$(var).h;))
+		$(shell /usr/bin/python3 qemu/header_gen.py $(var) > qemu/$(var).h;))
 	@echo "Generated headers for $(TARGETS)."
 
 
